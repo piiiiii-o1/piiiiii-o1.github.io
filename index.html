@@ -3,49 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>私のWindowsアプリ - ぴー＠日産-35.86%</title>
+  <title>株・FXツール - ぴー＠日産-35.86%</title>
 
-  <!-- OGP + Twitter Card（画像表示のために必須） -->
-  <meta property="og:title" content="株・FXツール - Win11 25H2対応アプリ">
-  <meta property="og:description" content="1分足スキャルピング用秒読みツール。無料ダウンロードOK！">
-  <meta property="og:image" content="https://piiiiii-o1.github.io/スクリーンショット%202026-03-04%20033512.png"> <!-- スペースは%20になるのでこのまま -->
+  <!-- OGP (Facebook / X / その他SNS用) -->
+  <meta property="og:title" content="株・FXツール - Win11 25H2対応 1分足秒読みアプリ">
+  <meta property="og:description" content="Windows 11 25H2で作った無料ツール。1分を区間として秒を読み上げます。スキャルピングに便利！">
+  <meta property="og:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
   <meta property="og:url" content="https://piiiiii-o1.github.io">
   <meta property="og:type" content="website">
 
+  <!-- Twitter / X Card（大きな画像カードで表示） -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="株・FXツール - Win11 25H2対応アプリ">
-  <meta name="twitter:description" content="1分を区間として秒読みします。無料です！">
-  <meta name="twitter:image" content="https://piiiiii-o1.github.io/スクリーンショット%202026-03-04%20033512.png">
+  <meta name="twitter:title" content="株・FXツール - 無料秒読みアプリ">
+  <meta name="twitter:description" content="1分足スキャルピング用。0秒・10秒…を読みます。詳細はこちら">
+  <meta name="twitter:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
   <meta name="twitter:site" content="@piiiiii_o1">
+  <meta name="twitter:image:alt" content="株・FXツールのメイン画面">
 
   <style>
-    body { font-family: sans-serif; margin: 40px; text-align: center; }
-    h1 { color: #333; }
-    .download-btn { display: inline-block; padding: 15px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 1.2em; margin: 20px; }
-    .affiliate { margin-top: 50px; color: #666; }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 { color: #333; margin-bottom: 10px; }
+    h2 { color: #444; margin-top: 40px; }
+    p, li { color: #555; }
+    .download-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1.3em;
+      margin: 30px 0;
+      transition: background 0.3s;
+    }
+    .download-btn:hover { background: #0056b3; }
+    .affiliate {
+      margin: 60px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    footer {
+      margin-top: 80px;
+      font-size: 0.9em;
+      color: #777;
+    }
   </style>
 </head>
 <body>
+
   <h1>株・FXツール</h1>
-  <p>Windows 11 25H2で作ったオリジナルアプリです。無料です。</p>
-  <br>
-  ・1分足スキャルピング用秒読みツール<br>
+  <p>Windows 11 25H2で作ったオリジナルアプリです。完全無料で使えます。</p>
+
+  <h2>主な機能</h2>
+  <ul style="list-style: none; padding: 0;">
+    <li>・1分足スキャルピング用「秒読みツール」</li>
+    <li>・1分を区間として、0秒・10秒・20秒・30秒・40秒・50秒を読み上げ</li>
+    <li>・その後1〜9秒もカウント（0に戻るまで）</li>
+    <li>・時間はPCのシステム時計から正確に取得</li>
+  </ul>
 
   <h2>アプリのスクリーンショット</h2>
-  <!-- 現在の実際のファイル名で修正（日本語ファイル名は%20エンコードされるが、この形でOK） -->
-  <img src="/スクリーンショット 2026-03-04 033512.png" 
-       alt="アプリのメイン画面" 
-       width="800" 
-       style="max-width: 100%; height: auto;">
+  <img src="/screenshot-2026-03-04.png" 
+       alt="株・FXツールのメイン画面" 
+       width="800">
 
-  <!-- imagesフォルダに移した場合の例（今はフォルダないのでコメントアウト） -->
-  <!-- <img src="/images/app-screenshot.png" alt="説明"> -->
+  <h2>対応OS</h2>
+  <p>Windows 11 25H2以降（Windows 10でも動作する可能性あり）</p>
 
-  <br>
-  機能: 1分を一区間として、秒を読みます（0、10秒、20秒、30秒、40秒、50秒、1、2、3、4、5、6、7、8、9）。<br>
-  時間はシステムから取得します。<br><br>
-  対応OS: Windows 11 25H2以降<br><br>
-  自己責任でダウンロード・使用してください。<br>
+  <p style="font-weight: bold; color: #d32f2f; margin: 30px 0;">
+    自己責任でダウンロード・使用してください。バグ報告はX（@piiiiii_o1）まで。
+  </p>
 
   <a href="https://github.com/piiiiii-o1/piiiiii-o1.github.io/releases/download/v1.0/second_reader.exe"
      download class="download-btn">
@@ -53,13 +96,20 @@
   </a>
 
   <div class="affiliate">
-    <p>このツールに最適なPCパーツはこちら（アフィリエイトリンク例）</p>
-    <!-- 実際のAmazonリンクに置き換えて -->
-    <a href="https://amzn.to/あなたのリンク" target="_blank">おすすめゲーミングPC（Amazon）</a>
+    <p>このツールを快適に使うためのおすすめアイテム（アフィリエイトリンク）</p>
+    <a href="https://amzn.to/あなたの実際のリンク" target="_blank" rel="nofollow">
+      高性能ゲーミングPC（Amazon）
+    </a>
+    <br><br>
+    <a href="https://あなたの他のアフィリエイトリンク" target="_blank" rel="nofollow">
+      高速SSD（楽天など）
+    </a>
   </div>
 
-  <footer style="margin-top: 100px; font-size: 0.8em;">
-    © 2026 ぴー＠日産-35.86% | <a href="https://twitter.com/piiiiii_o1">Xで連絡</a>
+  <footer>
+    © 2026 ぴー＠日産-35.86% | 
+    <a href="https://twitter.com/piiiiii_o1" target="_blank">Xで連絡・質問</a>
   </footer>
+
 </body>
 </html>
