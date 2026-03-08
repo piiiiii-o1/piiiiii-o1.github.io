@@ -18,56 +18,101 @@
   <button id="stop">ストップ</button>
   <button id="voice">音声オン</button>
 
-  <script type="text/javascript">
-    let pyodide = null;
-    let intervalId = null;
-    let useVoice = false;
-    const synth = window.speechSynthesis;
+  # second_reader.py  ← これで上書き保存してexe化してください
+import datetime
+import time
+import pyttsx3
+import threading
+import tkinter as tk
 
-    async function loadPyodideAndRun() {
-      pyodide = await loadPyodide();
-      await pyodide.loadPackage('micropip'); // 必要ならパッケージインストール
-    }
+# ===================== 設定エリア（ご指定の最新設定を完全反映）=====================
+TARGET_SECONDS = [0, 10, 20, 30, 40, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
 
-    async function getReading(seconds) {
-      const code = `
-      def read_second(s):
-          readings = ['0', '10秒', '20秒', '30秒', '40秒', '50秒', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-          if s // 10 == 5:
-              return readings[s % 10 + 6]
-          else:
-              return readings[s // 10]
-      read_second(${seconds})
-      `;
-      return await pyodide.runPythonAsync(code);
-    }
+custom_settings = {
+     0: ("ゼロ",               180),
+    10: ("じゅう秒",           150),
+    20: ("にじゅう秒",         150),
+    30: ("さんじゅう秒",       150),
+    40: ("よんじゅう秒",       150),
+    50: ("ごじゅう秒、いち",   200),   # ← ご指定通り！
+    # 51は使わない（50秒で「いち」と一緒に発声済み）
+    52: ("に",                 250),
+    53: ("さん",               250),
+    54: ("よん",               250),
+    55: ("ご",                 250),
+    56: ("ろく",               250),
+    57: ("なな",               250),
+    58: ("はち",               250),
+    59: ("きゅう",             250),
+}
+# =====================================================================
 
-    async function updateTimer() {
-      const now = new Date().getSeconds();
-      const reading = await getReading(now);
-      document.getElementById('timer').textContent = reading;
-      if (useVoice) {
-        const utterance = new SpeechSynthesisUtterance(reading);
-        utterance.lang = 'ja-JP';
-        synth.speak(utterance);
-      }
-    }
+running = False
+thread = None
 
-    document.getElementById('start').addEventListener('click', async () => {
-      if (!pyodide) await loadPyodideAndRun();
-      if (!intervalId) intervalId = setInterval(updateTimer, 1000);
-    });
+def speak(text, rate):
+    engine = pyttsx3.init()
+    engine.setProperty('rate', rate)
+    engine.setProperty('volume', 1.0)
+    voices = engine.getProperty('voices')
+    for voice in voices:
+        if 'japan' in voice.name.lower() or 'haruka' in voice.name.lower():
+            engine.setProperty('voice', voice.id)
+            break
+    engine.say(text)
+    engine.runAndWait()
 
-    document.getElementById('stop').addEventListener('click', () => {
-      clearInterval(intervalId);
-      intervalId = null;
-      document.getElementById('timer').textContent = '--';
-    });
+def reader_loop():
+    last_sec = -1
+    while running:
+        if not running:
+            break
+        now = datetime.datetime.now()
+        sec = now.second
+        if sec in custom_settings and sec != last_sec:
+            text, rate = custom_settings[sec]
+            speak(text, rate)
+            log_text.insert(tk.END, f"{now.strftime('%H:%M:%S')} → {sec:02d}  →  {text} (rate={rate})\n")
+            log_text.see(tk.END)
+            last_sec = sec
+        time.sleep(0.08)
 
-    document.getElementById('voice').addEventListener('click', () => {
-      useVoice = !useVoice;
-      this.textContent = useVoice ? '音声オフ' : '音声オン';
-    });
-  </script>
+def toggle_reading():
+    global running, thread
+    if not running:
+        running = True
+        thread = threading.Thread(target=reader_loop, daemon=True)
+        thread.start()
+        btn.config(text="OFF（停止）", bg="#ff9999")
+        status_label.config(text="実行中", foreground="green")
+    else:
+        running = False
+        btn.config(text="ON（開始）", bg="#99ff99")
+        status_label.config(text="停止中", foreground="red")
+
+# ------------------- GUI -------------------
+root = tk.Tk()
+root.title("秒読み上げツール")
+root.geometry("480x400")
+root.resizable(False, False)
+root.configure(bg="#f5f5f5")
+
+tk.Label(root, text="秒読み上げツール", font=("メイリオ", 20, "bold"), bg="#f5f5f5").pack(pady=20)
+
+btn = tk.Button(root, text="ON（開始）", font=("メイリオ", 16), width=20, height=2,
+                bg="#99ff99", fg="black", activebackground="#77dd77", command=toggle_reading)
+btn.pack(pady=15)
+
+status_label = tk.Label(root, text="停止中", font=("メイリオ", 14), bg="#f5f5f5", fg="red")
+status_label.pack(pady=5)
+
+tk.Label(root, text="発声ログ", font=("メイリオ", 11), bg="#f5f5f5").pack(anchor="w", padx=30)
+log_text = tk.Text(root, height=13, font=("Consolas", 11), bg="#ffffff", relief="solid", bd=1)
+log_text.pack(fill=tk.BOTH, expand=True, padx=30, pady=10)
+
+running = False
+
+root.protocol("WM_DELETE_WINDOW", root.quit)
+root.mainloop()
 </body>
 </html>
