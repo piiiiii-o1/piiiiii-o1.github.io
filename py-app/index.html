@@ -45,6 +45,7 @@
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
 
+    // 設定オブジェクト（あなたのcustom_settingsをJSに変換）
     const customSettings = {
       0:  ["ゼロ",               1.8],
       10: ["じゅう秒",           1.5],
@@ -79,7 +80,7 @@
 
     function addLog(message) {
       const now = new Date().toLocaleTimeString('ja-JP');
-      logDiv.textContent += `${now} → ${message}\n`;
+      logDiv.textContent += now + " → " + message + "\n";
       logDiv.scrollTop = logDiv.scrollHeight;
     }
 
@@ -91,14 +92,14 @@
       synth.speak(utterance);
     }
 
-    async function checkAndSpeak() {
+    function checkAndSpeak() {
       const now = new Date();
       const sec = now.getSeconds();
 
       if (sec in customSettings) {
         const [text, rate] = customSettings[sec];
         speak(text, rate);
-        addLog(`${sec:02d}秒 → ${text} (rate=${rate})`);
+        addLog(sec.toString().padStart(2, '0') + "秒 → " + text + " (rate=" + rate + ")");
       }
     }
 
@@ -107,7 +108,7 @@
 
       if (!pyodide) {
         await initPyodide();
-        if (!pyodide) return; // ロード失敗時は何もしない
+        if (!pyodide) return;
       }
 
       isRunning = true;
@@ -118,7 +119,7 @@
 
       addLog("開始しました");
 
-      await checkAndSpeak(); // 即時チェック
+      checkAndSpeak(); // 即時チェック
       intervalId = setInterval(checkAndSpeak, 1000);
     });
 
@@ -135,7 +136,7 @@
       addLog("停止しました");
     });
 
-    // ページロード時に自動でPyodideを試す（ボタンはロード成功後に有効）
+    // ページロード時に自動初期化
     initPyodide();
   </script>
 </body>
