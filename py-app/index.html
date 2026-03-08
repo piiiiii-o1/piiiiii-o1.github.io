@@ -3,116 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>秒読みツール - Pyodide Web版</title>
+  <title>秒読み上げツール - Web版 (Pyodide)</title>
   <style>
-    body { font-family: sans-serif; text-align: center; margin: 50px; }
-    #timer { font-size: 48px; color: #007bff; }
-    button { padding: 10px 20px; font-size: 20px; }
+    body {
+      font-family: 'メイリオ', Meiryo, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    #status {
+      font-size: 1.3em;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .running { color: green; }
+    .stopped { color: red; }
+    button {
+      font-size: 1.2em;
+      padding: 12px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+    #startBtn {
+      background: #28a745;
+    }
+    #startBtn:hover { background: #218838; }
+    #stopBtn {
+      background: #dc3545;
+    }
+    #stopBtn:hover { background: #c82333; }
+    #log {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      height: 250px;
+      overflow-y: auto;
+      padding: 15px;
+      text-align: left;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+      margin-top: 20px;
+    }
+    #loading {
+      font-size: 1.1em;
+      color: #666;
+      margin: 20px 0;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
 </head>
 <body>
-  <h1>1分足スキャルピング用秒読みツール</h1>
-  <p>現在の秒: <span id="timer">--</span></p>
-  <button id="start">スタート</button>
-  <button id="stop">ストップ</button>
-  <button id="voice">音声オン</button>
+  <h1>秒読み上げツール - Web版</h1>
+  <p id="loading">Pyodideを読み込み中... 初回は数秒〜10秒かかります</p>
 
-  # second_reader.py  ← これで上書き保存してexe化してください
-import datetime
-import time
-import pyttsx3
-import threading
-import tkinter as tk
+  <div id="status" class="stopped">停止中</div>
 
-# ===================== 設定エリア（ご指定の最新設定を完全反映）=====================
-TARGET_SECONDS = [0, 10, 20, 30, 40, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
+  <button id="startBtn">ON（開始）</button>
+  <button id="stopBtn" disabled>OFF（停止）</button>
 
-custom_settings = {
-     0: ("ゼロ",               180),
-    10: ("じゅう秒",           150),
-    20: ("にじゅう秒",         150),
-    30: ("さんじゅう秒",       150),
-    40: ("よんじゅう秒",       150),
-    50: ("ごじゅう秒、いち",   200),   # ← ご指定通り！
-    # 51は使わない（50秒で「いち」と一緒に発声済み）
-    52: ("に",                 250),
-    53: ("さん",               250),
-    54: ("よん",               250),
-    55: ("ご",                 250),
-    56: ("ろく",               250),
-    57: ("なな",               250),
-    58: ("はち",               250),
-    59: ("きゅう",             250),
-}
-# =====================================================================
+  <div id="log">発声ログがここに表示されます\n</div>
 
-running = False
-thread = None
+  <script type="text/javascript">
+    let pyodide = null;
+    let intervalId = null;
+    let isRunning = false;
+    const synth = window.speechSynthesis;
+    const logDiv = document.getElementById('log');
+    const statusDiv = document.getElementById('status');
+    const loadingP = document.getElementById('loading');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
 
-def speak(text, rate):
-    engine = pyttsx3.init()
-    engine.setProperty('rate', rate)
-    engine.setProperty('volume', 1.0)
-    voices = engine.getProperty('voices')
-    for voice in voices:
-        if 'japan' in voice.name.lower() or 'haruka' in voice.name.lower():
-            engine.setProperty('voice', voice.id)
-            break
-    engine.say(text)
-    engine.runAndWait()
+    // あなたのcustom_settingsをJSオブジェクトに変換
+    const customSettings = {
+      0:  ["ゼロ",               1.8],
+      10: ["じゅう秒",           1.5],
+      20: ["にじゅう秒",         1.5],
+      30: ["さんじゅう秒",       1.5],
+      40: ["よんじゅう秒",       1.5],
+      50: ["ごじゅう秒、いち",   2.0],
+      52: ["に",                 2.5],
+      53: ["さん",               2.5],
+      54: ["よん",               2.5],
+      55: ["ご",                 2.5],
+      56: ["ろく",               2.5],
+      57: ["なな",               2.5],
+      58: ["はち",               2.5],
+      59: ["きゅう",             2.5],
+    };
 
-def reader_loop():
-    last_sec = -1
-    while running:
-        if not running:
-            break
-        now = datetime.datetime.now()
-        sec = now.second
-        if sec in custom_settings and sec != last_sec:
-            text, rate = custom_settings[sec]
-            speak(text, rate)
-            log_text.insert(tk.END, f"{now.strftime('%H:%M:%S')} → {sec:02d}  →  {text} (rate={rate})\n")
-            log_text.see(tk.END)
-            last_sec = sec
-        time.sleep(0.08)
+    // Pyodide初期化
+    async function initPyodide() {
+      loadingP.textContent = "Pyodide読み込み中...";
+      pyodide = await loadPyodide();
+      loadingP.style.display = 'none';
+      startBtn.disabled = false;
+      logDiv.textContent += "Pyodideの初期化が完了しました\n";
+    }
 
-def toggle_reading():
-    global running, thread
-    if not running:
-        running = True
-        thread = threading.Thread(target=reader_loop, daemon=True)
-        thread.start()
-        btn.config(text="OFF（停止）", bg="#ff9999")
-        status_label.config(text="実行中", foreground="green")
-    else:
-        running = False
-        btn.config(text="ON（開始）", bg="#99ff99")
-        status_label.config(text="停止中", foreground="red")
+    // 発声関数（Web Speech API使用）
+    function speak(text, rate) {
+      if (!synth) {
+        logDiv.textContent += "音声合成が利用できません（ブラウザ非対応）\n";
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ja-JP';
+      utterance.rate = rate;
+      utterance.volume = 1.0;
+      synth.speak(utterance);
+    }
 
-# ------------------- GUI -------------------
-root = tk.Tk()
-root.title("秒読み上げツール")
-root.geometry("480x400")
-root.resizable(False, False)
-root.configure(bg="#f5f5f5")
+    // ログ追加
+    function addLog(message) {
+      const now = new Date().toLocaleTimeString('ja-JP');
+      logDiv.textContent += `${now} → ${message}\n`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
 
-tk.Label(root, text="秒読み上げツール", font=("メイリオ", 20, "bold"), bg="#f5f5f5").pack(pady=20)
+    // 毎秒チェック＆発声
+    async function checkAndSpeak() {
+      const now = new Date();
+      const sec = now.getSeconds();
 
-btn = tk.Button(root, text="ON（開始）", font=("メイリオ", 16), width=20, height=2,
-                bg="#99ff99", fg="black", activebackground="#77dd77", command=toggle_reading)
-btn.pack(pady=15)
+      if (sec in customSettings) {
+        const [text, rate] = customSettings[sec];
+        speak(text, rate);
+        addLog(`${sec:02d}秒 → ${text} (rate=${rate})`);
+      }
+    }
 
-status_label = tk.Label(root, text="停止中", font=("メイリオ", 14), bg="#f5f5f5", fg="red")
-status_label.pack(pady=5)
+    // スタート
+    startBtn.addEventListener('click', async () => {
+      if (isRunning) return;
 
-tk.Label(root, text="発声ログ", font=("メイリオ", 11), bg="#f5f5f5").pack(anchor="w", padx=30)
-log_text = tk.Text(root, height=13, font=("Consolas", 11), bg="#ffffff", relief="solid", bd=1)
-log_text.pack(fill=tk.BOTH, expand=True, padx=30, pady=10)
+      if (!pyodide) {
+        await initPyodide();
+      }
 
-running = False
+      isRunning = true;
+      statusDiv.textContent = "実行中";
+      statusDiv.className = "running";
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
 
-root.protocol("WM_DELETE_WINDOW", root.quit)
-root.mainloop()
+      addLog("開始しました");
+
+      // 即時チェック
+      await checkAndSpeak();
+
+      // 1秒ごとにチェック
+      intervalId = setInterval(checkAndSpeak, 1000);
+    });
+
+    // ストップ
+    stopBtn.addEventListener('click', () => {
+      if (!isRunning) return;
+
+      clearInterval(intervalId);
+      isRunning = false;
+      statusDiv.textContent = "停止中";
+      statusDiv.className = "stopped";
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+
+      addLog("停止しました");
+    });
+
+    // ページ読み込み時にPyodideを事前ロード（任意だが快適）
+    initPyodide().catch(err => {
+      loadingP.textContent = "Pyodide読み込みエラー: " + err.message;
+      console.error(err);
+    });
+  </script>
 </body>
 </html>
