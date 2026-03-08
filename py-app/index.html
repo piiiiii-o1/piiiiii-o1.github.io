@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>秒読みツール - Pyodide Web版</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 50px; }
+    #timer { font-size: 48px; color: #007bff; }
+    button { padding: 10px 20px; font-size: 20px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+</head>
+<body>
+  <h1>1分足スキャルピング用秒読みツール</h1>
+  <p>現在の秒: <span id="timer">--</span></p>
+  <button id="start">スタート</button>
+  <button id="stop">ストップ</button>
+  <button id="voice">音声オン</button>
+
+  <script type="text/javascript">
+    let pyodide = null;
+    let intervalId = null;
+    let useVoice = false;
+    const synth = window.speechSynthesis;
+
+    async function loadPyodideAndRun() {
+      pyodide = await loadPyodide();
+      await pyodide.loadPackage('micropip'); // 必要ならパッケージインストール
+    }
+
+    async function getReading(seconds) {
+      const code = `
+      def read_second(s):
+          readings = ['0', '10秒', '20秒', '30秒', '40秒', '50秒', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+          if s // 10 == 5:
+              return readings[s % 10 + 6]
+          else:
+              return readings[s // 10]
+      read_second(${seconds})
+      `;
+      return await pyodide.runPythonAsync(code);
+    }
+
+    async function updateTimer() {
+      const now = new Date().getSeconds();
+      const reading = await getReading(now);
+      document.getElementById('timer').textContent = reading;
+      if (useVoice) {
+        const utterance = new SpeechSynthesisUtterance(reading);
+        utterance.lang = 'ja-JP';
+        synth.speak(utterance);
+      }
+    }
+
+    document.getElementById('start').addEventListener('click', async () => {
+      if (!pyodide) await loadPyodideAndRun();
+      if (!intervalId) intervalId = setInterval(updateTimer, 1000);
+    });
+
+    document.getElementById('stop').addEventListener('click', () => {
+      clearInterval(intervalId);
+      intervalId = null;
+      document.getElementById('timer').textContent = '--';
+    });
+
+    document.getElementById('voice').addEventListener('click', () => {
+      useVoice = !useVoice;
+      this.textContent = useVoice ? '音声オフ' : '音声オン';
+    });
+  </script>
+</body>
+</html>
