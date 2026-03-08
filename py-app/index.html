@@ -5,68 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>秒読み上げツール - Web版 (Pyodide)</title>
   <style>
-    body {
-      font-family: 'メイリオ', Meiryo, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-    #status {
-      font-size: 1.3em;
-      margin: 10px 0;
-      font-weight: bold;
-    }
+    body { font-family: 'メイリオ', Meiryo, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; text-align: center; }
+    h1 { color: #333; margin-bottom: 20px; }
+    #status { font-size: 1.3em; margin: 10px 0; font-weight: bold; }
     .running { color: green; }
     .stopped { color: red; }
-    button {
-      font-size: 1.2em;
-      padding: 12px 30px;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-    }
-    #startBtn {
-      background: #28a745;
-    }
+    button { font-size: 1.2em; padding: 12px 30px; margin: 10px; border: none; border-radius: 8px; cursor: pointer; color: white; }
+    #startBtn { background: #28a745; }
     #startBtn:hover { background: #218838; }
-    #stopBtn {
-      background: #dc3545;
-    }
+    #stopBtn { background: #dc3545; }
     #stopBtn:hover { background: #c82333; }
-    #log {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      height: 250px;
-      overflow-y: auto;
-      padding: 15px;
-      text-align: left;
-      font-family: Consolas, monospace;
-      white-space: pre-wrap;
-      margin-top: 20px;
-    }
-    #loading {
-      font-size: 1.1em;
-      color: #666;
-      margin: 20px 0;
-    }
+    #log { background: white; border: 1px solid #ccc; border-radius: 6px; height: 250px; overflow-y: auto; padding: 15px; text-align: left; font-family: Consolas, monospace; white-space: pre-wrap; margin-top: 20px; }
+    #loading { font-size: 1.1em; color: #666; margin: 20px 0; }
+    #error { color: red; font-weight: bold; margin: 10px 0; }
   </style>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
 </head>
 <body>
   <h1>秒読み上げツール - Web版</h1>
-  <p id="loading">Pyodideを読み込み中... 初回は数秒〜10秒かかります</p>
+  <p id="loading">Pyodideを読み込み中... 初回は数秒〜10秒かかります（ネットワーク状況により時間がかかる場合あり）</p>
+  <div id="error"></div>
 
   <div id="status" class="stopped">停止中</div>
 
-  <button id="startBtn">ON（開始）</button>
+  <button id="startBtn" disabled>ON（開始）</button>
   <button id="stopBtn" disabled>OFF（停止）</button>
 
   <div id="log">発声ログがここに表示されます\n</div>
@@ -75,14 +37,14 @@
     let pyodide = null;
     let intervalId = null;
     let isRunning = false;
-    const synth = window.speechSynthesis;
+    const synth = window.speechSynthesis || { speak: () => console.log("SpeechSynthesis not supported") };
     const logDiv = document.getElementById('log');
     const statusDiv = document.getElementById('status');
     const loadingP = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
 
-    // あなたのcustom_settingsをJSオブジェクトに変換
     const customSettings = {
       0:  ["ゼロ",               1.8],
       10: ["じゅう秒",           1.5],
@@ -100,21 +62,28 @@
       59: ["きゅう",             2.5],
     };
 
-    // Pyodide初期化
     async function initPyodide() {
-      loadingP.textContent = "Pyodide読み込み中...";
-      pyodide = await loadPyodide();
-      loadingP.style.display = 'none';
-      startBtn.disabled = false;
-      logDiv.textContent += "Pyodideの初期化が完了しました\n";
+      try {
+        loadingP.textContent = "Pyodideを読み込み中... (ネットワーク状況により時間がかかる場合あり)";
+        pyodide = await loadPyodide();
+        loadingP.style.display = 'none';
+        startBtn.disabled = false;
+        addLog("Pyodideの初期化が完了しました！ 開始ボタンを押せます");
+      } catch (err) {
+        loadingP.textContent = "";
+        errorDiv.textContent = "Pyodide読み込みエラー: " + err.message + "。ページをリロードするか、ネットワークを確認してください。";
+        console.error("Pyodide load error:", err);
+        startBtn.disabled = true;
+      }
     }
 
-    // 発声関数（Web Speech API使用）
+    function addLog(message) {
+      const now = new Date().toLocaleTimeString('ja-JP');
+      logDiv.textContent += `${now} → ${message}\n`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
     function speak(text, rate) {
-      if (!synth) {
-        logDiv.textContent += "音声合成が利用できません（ブラウザ非対応）\n";
-        return;
-      }
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
       utterance.rate = rate;
@@ -122,14 +91,6 @@
       synth.speak(utterance);
     }
 
-    // ログ追加
-    function addLog(message) {
-      const now = new Date().toLocaleTimeString('ja-JP');
-      logDiv.textContent += `${now} → ${message}\n`;
-      logDiv.scrollTop = logDiv.scrollHeight;
-    }
-
-    // 毎秒チェック＆発声
     async function checkAndSpeak() {
       const now = new Date();
       const sec = now.getSeconds();
@@ -141,12 +102,12 @@
       }
     }
 
-    // スタート
     startBtn.addEventListener('click', async () => {
       if (isRunning) return;
 
       if (!pyodide) {
         await initPyodide();
+        if (!pyodide) return; // ロード失敗時は何もしない
       }
 
       isRunning = true;
@@ -157,14 +118,10 @@
 
       addLog("開始しました");
 
-      // 即時チェック
-      await checkAndSpeak();
-
-      // 1秒ごとにチェック
+      await checkAndSpeak(); // 即時チェック
       intervalId = setInterval(checkAndSpeak, 1000);
     });
 
-    // ストップ
     stopBtn.addEventListener('click', () => {
       if (!isRunning) return;
 
@@ -178,11 +135,8 @@
       addLog("停止しました");
     });
 
-    // ページ読み込み時にPyodideを事前ロード（任意だが快適）
-    initPyodide().catch(err => {
-      loadingP.textContent = "Pyodide読み込みエラー: " + err.message;
-      console.error(err);
-    });
+    // ページロード時に自動でPyodideを試す（ボタンはロード成功後に有効）
+    initPyodide();
   </script>
 </body>
 </html>
