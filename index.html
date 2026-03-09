@@ -6,19 +6,19 @@
   <title>株・FXツール - ぴー＠日産-35.86%</title>
 
   <!-- OGP (Facebook / X / その他SNS用) -->
-  <meta property="og:title" content="株・FXツール - Win11 25H2対応 1分足秒読みアプリ">
-  <meta property="og:description" content="Windows 11 25H2で作った無料ツール。1分を区間として秒を読み上げます。スキャルピングに便利！">
+  <meta property="og:title" content="株・FXツール - ぴー＠日産-35.86%">
+  <meta property="og:description" content="Windows 11 25H2対応の無料ツール集。スキャルピング用秒読みツールなど、株・FXに便利なアプリを公開中！">
   <meta property="og:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
   <meta property="og:url" content="https://piiiiii-o1.github.io">
   <meta property="og:type" content="website">
 
-  <!-- Twitter / X Card（大きな画像カードで表示） -->
+  <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="株・FXツール - 無料秒読みアプリ">
-  <meta name="twitter:description" content="1分足スキャルピング用。0秒・10秒…を読みます。詳細はこちら">
+  <meta name="twitter:title" content="株・FXツール - 無料ツール集">
+  <meta name="twitter:description" content="1分足スキャルピング用秒読みツールなど、Windowsアプリを無料公開中！">
   <meta name="twitter:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
   <meta name="twitter:site" content="@piiiiii_o1">
-  <meta name="twitter:image:alt" content="株・FXツールのメイン画面">
+  <meta name="twitter:image:alt" content="株・FXツールのスクリーンショット">
 
   <style>
     body {
@@ -26,30 +26,56 @@
       margin: 20px;
       text-align: center;
       line-height: 1.6;
-      max-width: 900px;
+      max-width: 1100px;
       margin-left: auto;
       margin-right: auto;
+      background: #f8f9fa;
     }
     h1 { color: #333; margin-bottom: 10px; }
-    h2 { color: #444; margin-top: 40px; }
+    h2 { color: #444; margin: 50px 0 20px; }
     p, li { color: #555; }
-    .download-btn {
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin: 40px 0;
+    }
+    .app-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 25px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: left;
+    }
+    .app-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .app-card h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .btn {
       display: inline-block;
-      padding: 15px 40px;
-      background: #007bff;
+      padding: 12px 28px;
       color: white;
       text-decoration: none;
       border-radius: 8px;
-      font-size: 1.3em;
-      margin: 30px 0;
+      font-size: 1.1em;
+      margin: 10px 5px 0 0;
       transition: background 0.3s;
     }
-    .download-btn:hover { background: #0056b3; }
+    .exe-btn { background: #007bff; }
+    .exe-btn:hover { background: #0056b3; }
+    .web-btn { background: #28a745; }
+    .web-btn:hover { background: #218838; }
     .affiliate {
       margin: 60px 0;
       padding: 20px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
     img {
       max-width: 100%;
@@ -64,49 +90,55 @@
       color: #777;
     }
   </style>
- <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FH393RSM9H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-FH393RSM9H');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FH393RSM9H"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FH393RSM9H');
+  </script>
 </head>
 <body>
 
   <h1>株・FXツール</h1>
-  <p>Windows 11 25H2で作ったオリジナルアプリです。完全無料で使えます。</p>
+  <p>Windows 11 25H2対応の無料ツール集です。スキャルピングやトレードに役立つアプリを公開中！</p>
 
-  <h2>主な機能</h2>
-  <ul style="list-style: none; padding: 0;">
-    <li>・1分足スキャルピング用「秒読みツール」</li>
-    <li>・1分を区間として、0秒・10秒・20秒・30秒・40秒・50秒を読み上げ</li>
-    <li>・その後1〜9秒もカウント（0に戻るまで）</li>
-    <li>・時間はPCのシステム時計から正確に取得</li>
-  </ul>
+  <h2>利用可能なツール</h2>
+  <div class="container">
+    <!-- 秒読み上げツールカード -->
+    <div class="app-card">
+      <h3>秒読み上げツール</h3>
+      <p>1分足スキャルピング用。0秒・10秒・...・50秒を読み上げ、その後1〜9秒もカウント。システム時計から正確に取得します。</p>
+      <a href="/second-reader/" class="btn exe-btn">詳細ページへ（ダウンロード + ウェブ版）</a>
+    </div>
 
-  <h2>アプリのスクリーンショット</h2>
+    <!-- 新しいアプリのカード（準備中例） -->
+    <div class="app-card">
+      <h3>次のツール（準備中）</h3>
+      <p>新しい株・FX支援ツールを開発中です。近日公開予定！</p>
+      <a href="#" class="btn" style="background: #6c757d; cursor: not-allowed;">準備中</a>
+    </div>
+
+    <!-- 必要に応じてカードを追加 -->
+  </div>
+
+  <h2>スクリーンショット</h2>
   <img src="/screenshot-2026-03-04.png" 
-       alt="株・FXツールのメイン画面" 
+       alt="株・FXツールのスクリーンショット" 
        width="800">
 
-  <h2>対応OS</h2>
-  <p>Windows 11 25H2以降（Windows 10でも動作する可能性あり）</p>
+  <div class="affiliate">
+    <p>ツールを快適に使うためのおすすめアイテム（アフィリエイトリンク）</p>
+    <a href="https://amzn.to/あなたのリンク" target="_blank" rel="nofollow" class="btn" style="background: #ff9900;">
+      AmazonでおすすめPCを見る
+    </a>
+  </div>
 
-  <p style="font-weight: bold; color: #d32f2f; margin: 30px 0;">
-    自己責任でダウンロード・使用してください。バグ報告はX（@piiiiii_o1）まで。
+  <p style="font-weight: bold; color: #d32f2f; margin: 40px 0;">
+    すべてのツールは自己責任でダウンロード・使用してください。バグ報告はX（@piiiiii_o1）まで。
   </p>
-
-  <a href="https://github.com/piiiiii-o1/piiiiii-o1.github.io/releases/download/v1.0/second_reader.exe"
-     download class="download-btn">
-    今すぐダウンロード (EXE版)
-  </a>
-<a href="/py-app/" class="download-btn" style="background: #28a745; margin: 20px 10px;">
-  ブラウザで試す（ウェブ版アプリ）
-</a>
- 
 
   <footer>
     © 2026 ぴー＠日産-35.86% | 
