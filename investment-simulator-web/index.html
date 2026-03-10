@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投資シミュレーター - Web版 (ブラウザで試せます)</title>
+  <style>
+    body {
+      font-family: 'メイリオ', Meiryo, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin: 20px 0;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 12px 40px;
+      margin: 20px 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+    #calculateBtn { background: #007bff; }
+    #calculateBtn:hover { background: #0056b3; }
+    #resetBtn { background: #6c757d; }
+    #resetBtn:hover { background: #5a6268; }
+    #result {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+      min-height: 120px;
+      text-align: left;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+    #error {
+      color: #dc3545;
+      font-weight: bold;
+      margin: 10px 0;
+      min-height: 20px;
+    }
+    #loading {
+      font-size: 1.1em;
+      color: #666;
+      margin: 30px 0;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+</head>
+<body>
+  <h1>投資シミュレーター - Web版</h1>
+  <p id="loading">Pyodideを読み込み中... 初回は数秒〜10秒かかります（インストール不要）</p>
+
+  <div class="form-group">
+    <label for="X">日毎積み立て金額 (X 円):</label>
+    <input type="number" id="X" value="10000" min="1" step="100">
+  </div>
+
+  <div class="form-group">
+    <label for="Y">投資期間 (Y 年):</label>
+    <input type="number" id="Y" value="20" min="1" step="1">
+  </div>
+
+  <button id="calculateBtn" disabled>計算する</button>
+  <button id="resetBtn" disabled>リセット</button>
+
+  <div id="error"></div>
+  <div id="result">結果がここに表示されます</div>
+
+  <p style="margin-top: 40px;">
+    <a href="/investment-simulator/">← 専用ページに戻る</a>
+  </p>
+
+  <script type="text/javascript">
+    let pyodide = null;
+    const loading = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    const resultDiv = document.getElementById('result');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    async function initPyodide() {
+      try {
+        pyodide = await loadPyodide();
+        loading.style.display = 'none';
+        calculateBtn.disabled = false;
+        resetBtn.disabled = false;
+        resultDiv.textContent = "Pyodideの初期化が完了しました。\n計算ボタンを押してください。";
+      } catch (err) {
+        loading.textContent = "";
+        errorDiv.textContent = "Pyodide読み込みエラー: " + err.message + "。ページをリロードしてください。";
+        console.error(err);
+        calculateBtn.disabled = true;
+      }
+    }
+
+    async function calculate() {
+      errorDiv.textContent = "";
+      const X = parseFloat(document.getElementById('X').value);
+      const Y = parseFloat(document.getElementById('Y').value);
+
+      if (isNaN(X) || isNaN(Y) || X <= 0 || Y <= 0) {
+        errorDiv.textContent = "入力値は正の数にしてください。";
+        return;
+      }
+
+      try {
+        const code = `
+import math
+
+def calculate_investment(X, Y):
+    annual_rate = 0.06
+    days_per_year = 365
+    N = Y * days_per_year
+    r_daily = (1 + annual_rate) ** (1 / days_per_year) - 1
+
+    if r_daily == 0:
+        FV = X * N
+    else:
+        FV = X * ((1 + r_daily) ** N - 1) / r_daily
+
+    principal = X * N
+    profit = FV - principal
+
+    return principal, FV, profit
+
+calculate_investment(${X}, ${Y})
+        `;
+        const [principal, FV, profit] = await pyodide.runPythonAsync(code);
+
+        resultDiv.innerHTML = 
+          `総積立額（元本）: ${principal.toLocaleString('ja-JP', {style: 'currency', currency: 'JPY'})}<br>` +
+          `総運用額: ${FV.toLocaleString('ja-JP', {style: 'currency', currency: 'JPY'})}<br>` +
+          `利益: ${profit.toLocaleString('ja-JP', {style: 'currency', currency: 'JPY'})}`;
+      } catch (err) {
+        errorDiv.textContent = "計算エラー: " + err.message;
+        console.error(err);
+      }
+    }
+
+    calculateBtn.addEventListener('click', calculate);
+
+    resetBtn.addEventListener('click', () => {
+      document.getElementById('X').value = "10000";
+      document.getElementById('Y').value = "20";
+      resultDiv.textContent = "結果がここに表示されます";
+      errorDiv.textContent = "";
+    });
+
+    // ページ読み込み時にPyodide初期化
+    initPyodide();
+  </script>
+</body>
+</html>
