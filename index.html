@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>株・FXツール - ぴー＠日産-35.86%</title>
 
-  <!-- OGP / Twitter Card -->
+  <!-- OGP -->
   <meta property="og:title" content="株・FXツール - ぴー＠日産-35.86%">
   <meta property="og:description" content="Windows 11対応の無料ツール集。真実のトントン計算機、秒読み上げツールなど公開中！">
   <meta property="og:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
@@ -13,12 +13,7 @@
   <meta property="og:type" content="website">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="株・FXツール - 無料ツール集">
-  <meta name="twitter:description" content="真実のトントン計算機など、トレードに役立つ無料ツールを公開中！">
-  <meta name="twitter:image" content="https://piiiiii-o1.github.io/screenshot-2026-03-04.png">
-  <meta name="twitter:site" content="@piiiiii_o1">
 
-  
   <style>
     body {
       font-family: sans-serif;
@@ -32,10 +27,9 @@
     }
     h1 { color: #333; margin-bottom: 10px; }
     h2 { color: #444; margin: 50px 0 20px; }
-    p, li { color: #555; }
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 30px;
       margin: 40px 0;
     }
@@ -43,7 +37,7 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      padding: 25px;
+      padding: 20px;
       transition: transform 0.2s, box-shadow 0.2s;
       text-align: left;
     }
@@ -51,18 +45,24 @@
       transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
+    .app-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
     .app-card h3 {
-      margin-top: 0;
+      margin: 10px 0 8px 0;
       color: #007bff;
     }
     .btn {
       display: inline-block;
-      padding: 12px 28px;
+      padding: 12px 24px;
       color: white;
       text-decoration: none;
       border-radius: 8px;
-      font-size: 1.1em;
-      margin: 10px 5px 0 0;
+      font-size: 1.05em;
+      margin: 8px 5px 0 0;
       transition: background 0.3s;
     }
     .download-btn { background: #28a745; }
@@ -71,7 +71,7 @@
     .detail-btn:hover { background: #138496; }
   </style>
 
-  <!-- Google tag (gtag.js) -->
+  <!-- Google tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FH393RSM9H"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -83,39 +83,39 @@
 <body>
 
   <h1>株・FXツール</h1>
-  <p>Windows 11 25H2対応の無料ツール集です。スキャルピングやトレードに役立つアプリを公開中！</p>
+  <p>Windows 11対応の無料ツール集です。トレードに役立つツールを公開中！</p>
 
   <h2>利用可能なツール</h2>
   <div class="container">
 
- <!-- 真実のトントン計算機 -->
-<div class="app-card">
-  <h3>真実のトントン価額計算機</h3>
-  <p>ナンピン後の「税金20.315%を考慮した本当の同値撤退価格」を計算します。</p>
-  <a href="/tonton-calculator/" class="btn detail-btn">詳細ページへ（ダウンロード + ウェブ版）</a>
-</div>
-
-    <!-- 既存ツール -->
+    <!-- 真実のトントン計算機 -->
     <div class="app-card">
+      <img src="/tonton-calculator/screenshot.png" alt="真実のトントン価額計算機 スクリーンショット">
+      <h3>真実のトントン価額計算機</h3>
+      <p>ナンピン後の税金（20.315%）を考慮した「本当の同値撤退価格」を計算します。</p>
+      <a href="/tonton-calculator/" class="btn detail-btn">詳細ページへ（ダウンロード + ウェブ版）</a>
+    </div>
+
+    <!-- 秒読み上げツール -->
+    <div class="app-card">
+      <img src="/second-reader/screenshot.png" alt="秒読み上げツール スクリーンショット">
       <h3>秒読み上げツール</h3>
-      <p>1分足スキャルピング用。0秒・10秒・...・50秒を読み上げ、その後1〜9秒もカウント。</p>
+      <p>1分足スキャルピング用秒読み上げツール。0〜50秒を読み上げ、その後1〜9秒もカウント。</p>
       <a href="/second-reader/" class="btn detail-btn">詳細ページへ</a>
     </div>
 
+    <!-- オルカン積み立てシミュレーター -->
     <div class="app-card">
+      <img src="/investment-simulator/screenshot.png" alt="オルカン積み立てシミュレーター スクリーンショット">
       <h3>オルカン毎日積み立てシミュレーター</h3>
-      <p>毎日一定額をオルカン（全世界株式）に積み立てた場合のシミュレーションができます。</p>
+      <p>毎日一定額をオルカンに積み立てた場合の資産推移をシミュレーション。</p>
       <a href="/investment-simulator/" class="btn detail-btn">詳細ページへ</a>
     </div>
 
   </div>
 
-  <h2>スクリーンショット</h2>
-  <img src="/screenshot-2026-03-04.png" alt="株・FXツールのスクリーンショット" width="800">
-
-  <p style="font-weight: bold; color: #d32f2f; margin: 40px 0;">
-    すべてのツールは自己責任でダウンロード・使用してください。<br>
-    バグ報告はX（@piiiiii_o1）までお願いいたします。
+  <p style="font-weight: bold; color: #d32f2f; margin: 50px 0 20px;">
+    すべてのツールは自己責任でダウンロード・使用してください。
   </p>
 
   <footer>
