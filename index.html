@@ -27,6 +27,7 @@
     }
     h1 { color: #333; margin-bottom: 10px; }
     h2 { color: #444; margin: 50px 0 20px; }
+    
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -65,10 +66,14 @@
       margin: 8px 5px 0 0;
       transition: background 0.3s;
     }
-    .download-btn { background: #28a745; }
-    .download-btn:hover { background: #218838; }
     .detail-btn { background: #17a2b8; }
     .detail-btn:hover { background: #138496; }
+
+    /* 汎用ツールの付箋アプリだけ横幅を調整 */
+    .sticky-card {
+      max-width: 380px;
+      margin: 0 auto;           /* 中央寄せ */
+    }
   </style>
 
   <!-- Google tag -->
@@ -113,20 +118,22 @@
     </div>
 
   </div>
-    <!-- ここから新しいセクション：汎用ツール -->
-    <h2>汎用ツール</h2>
-    <div class="container">
 
-      <!-- 付箋アプリ -->
-  <!-- 付箋アプリ -->
-<div class="app-card">
-  <img src="/sticky-note/screenshot2.png" alt="シンプル付箋アプリ スクリーンショット">
-  <h3>シンプル付箋アプリ</h3>
-  <p>常に手前に表示ON/OFF可能。ウィンドウサイズも自由に変更できる軽量付箋メモツールです。</p>
-  <a href="/sticky-note/" class="btn detail-btn">詳細ページへ（ダウンロード）</a>
-</div>
+  <!-- 汎用ツールセクション -->
+  <h2>汎用ツール</h2>
+  <div class="container">
+
+    <!-- 付箋アプリ（横幅調整済み） -->
+    <div class="app-card sticky-card">
+      <img src="/sticky-note/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-05-23%20050852.png" 
+           alt="シンプル付箋アプリ スクリーンショット">
+      <h3>シンプル付箋アプリ</h3>
+      <p>常に手前に表示ON/OFF可能。ウィンドウサイズも自由に変更できる軽量付箋メモツールです。</p>
+      <a href="/sticky-note/" class="btn detail-btn">詳細ページへ（ダウンロード）</a>
     </div>
-    <!-- ここまで汎用ツール -->
+
+  </div>
+
   <p style="font-weight: bold; color: #d32f2f; margin: 50px 0 20px;">
     すべてのツールは自己責任でダウンロード・使用してください。
   </p>
